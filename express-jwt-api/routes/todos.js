@@ -1,16 +1,20 @@
 const
   express = require('express'),
   Todo = require('../models/Todo.js'),
+  authorize = require('../config/serverAuth.js').authorize, //goes into this file and kicks out only this method
   todosRouter = new express.Router()
+
+  todosRouter.use(authorize)
 
   todosRouter.route('/')
     .get((req,res) => {
-      Todo.find({}, (err, todos) => {
+      Todo.find({user: req.decoded._id}, (err, todos) => {
         res.json(todos)
       })
     })
     .post((req, res) => {
       const newTodo = new Todo(req.body)
+      newTodo.user = req.decoded._id
       newTodo.save((err, todo)=> {
         res.json({success: true, message: 'Todo created.', todo})
       })
