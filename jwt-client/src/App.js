@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
 import clientAuth from './clientAuth'
+import Todos from './Todos'
 
 class App extends Component {
 
@@ -18,7 +19,8 @@ class App extends Component {
     const currentUser = clientAuth.getCurrentUser()
     this.setState({
       currentUser: currentUser,
-      loggedIn: !!currentUser
+      loggedIn: !!currentUser,
+      view: currentUser ? 'todos' : 'home'
     })
   }
 
@@ -36,7 +38,8 @@ class App extends Component {
     clientAuth.logIn(credentials).then(user => {
       this.setState({
         currentUser: user,
-        loggedIn: true
+        loggedIn: true,
+        view: 'todos'
       })
     })
   }
@@ -67,9 +70,17 @@ class App extends Component {
           <h2>{this.state.loggedIn ? this.state.currentUser.name : 'Not Logged In'}</h2>
         </div>
         <ul>
-          <li><button name='signup' onClick={this._setView.bind(this)}>Sign Up</button></li>
-          <li><button name='login' onClick={this._setView.bind(this)}>Log In</button></li>
-          <li><button onClick={this._logOut.bind(this)}>Log Out</button></li>
+          {!this.state.loggedIn && (
+            <li><button name='signup' onClick={this._setView.bind(this)}>Sign Up</button></li>
+          )}
+          {!this.state.loggedIn && (
+            <li><button name='login' onClick={this._setView.bind(this)}>Log In</button></li>
+          )}
+
+          {this.state.loggedIn && (
+            <li><button onClick={this._logOut.bind(this)}>Log Out</button></li>
+          )}
+
         </ul>
         <p className="App-intro">
           To get started, edit <code>src/App.js</code> and save to reload.
@@ -77,7 +88,8 @@ class App extends Component {
         {{
           home: <h1>The Home View</h1>,
           login: <LogIn onLogin={this._logIn.bind(this)} />,
-          signup: <SignUp onSignup={this._signUp.bind(this)} />
+          signup: <SignUp onSignup={this._signUp.bind(this)} />,
+          todos: <Todos />
         }[this.state.view]}
       </div>
     );

@@ -1,5 +1,6 @@
 const
-  User = require('../models/User.js')
+  User = require('../models/User.js'),
+  serverAuth = require('../config/serverAuth.js')
 
 module.exports = {
   index,
@@ -23,7 +24,11 @@ function show(req, res) {
 
 function create(req, res) {
   User.create(req.body, (err, user) => {
-    res.json({success: true, message: "User account created.", user})
+    const userData = user.toObject()
+    delete userData.password
+    const token = serverAuth.createToken(userData)
+
+    res.json({success: true, message: "User account created.", user, token})
   })
 }
 
