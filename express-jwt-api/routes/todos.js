@@ -25,5 +25,10 @@ const
         })
       })
     })
+    .delete((req,res) => {
+      Todo.findByIdAndRemove(req.params.id, (err, todo) => {
+        res.json({success: true, message: 'Todo deleted.', todo})
+      })
+    })
 
 module.exports = todosRouter
